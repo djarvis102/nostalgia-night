@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nostalgia Night 🎶</title>
+<!-- CANVAS CONFETTI LIBRARY -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.0/dist/confetti.browser.min.js"></script>
+<style>
+:root{
+  --bg:#fff8ef;
+  --card:#ffffff;
+  --primary:#ff7b54;
+  --secondary:#ffcad4;
+  --accent:#7fb3ff;
+  --text:#2f2f2f;
+}
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+body{
+  font-family: "Trebuchet MS", sans-serif;
+  background:linear-gradient(180deg,#fff8ef,#ffe7d6);
+  min-height:100vh;
+  overflow-x:hidden;
+  color:var(--text);
+}
+.music-note{
+  position:fixed;
+  font-size:24px;
+  opacity:.2;
+  animation:floatUp linear infinite;
+  pointer-events:none;
+}
+@keyframes floatUp{
+  from{
+    transform:translateY(100vh);
+    opacity:0;
+  }
+  20%{
+    opacity:.2;
+  }
+  to{
+    transform:translateY(-120px);
+    opacity:0;
+  }
+}
+.page{
+  min-height:100vh;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+}
+.page.active{
+  display:flex;
+  animation:fadeIn .5s ease;
+}
+@keyframes fadeIn{
+  from{
+    opacity:0;
+    transform:translateY(15px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+.card{
+  background:var(--card);
+  width:100%;
+  max-width:600px;
+  border-radius:28px;
+  padding:30px;
+  text-align:center;
+  box-shadow:0 15px 40px rgba(0,0,0,.08);
+}
+.gif-top{
+  width:100%;
+  max-height:260px;
+  object-fit:cover;
+  border-radius:18px;
+  margin-bottom:20px;
+  background-color:#f0f0f0;
+  min-height:200px;
+}
+h1{
+  margin-bottom:15px;
+  line-height:1.3;
+}
+.sub{
+  font-size:18px;
+  margin-bottom:25px;
+  opacity:.85;
+}
+button{
+  border:none;
+  border-radius:14px;
+  padding:14px 22px;
+  cursor:pointer;
+  font-size:16px;
+  transition:.2s;
+}
+.primary{
+  background:var(--primary);
+  color:white;
+}
+.primary:hover{
+  transform:scale(1.04);
+}
+.secondary{
+  background:#ececec;
+}
+.btn-row{
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  margin-top:25px;
+  flex-wrap:wrap;
+  position:relative;
+  min-height:90px;
+}
+#noBtn{
+  position:relative;
+  transition:none;
+}
+label{
+  display:block;
+  text-align:left;
+  margin-bottom:8px;
+  margin-top:18px;
+  font-weight:bold;
+}
+input,
+select{
+  width:100%;
+  padding:14px;
+  border-radius:12px;
+  border:1px solid #ddd;
+  font-size:16px;
+}
+.food-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:15px;
+  margin-top:25px;
+}
+.food-card{
+  border:2px solid #eee;
+  border-radius:18px;
+  padding:18px;
+  cursor:pointer;
+  transition:.25s;
+}
+.food-card:hover{
+  transform:translateY(-3px);
+}
+.food-card.selected{
+  border-color:var(--primary);
+  background:#fff4ef;
+}
+.food-emoji{
+  font-size:38px;
+  display:block;
+  margin-bottom:8px;
+}
+.bounce{
+  animation:bounce .6s infinite alternate;
+}
+@keyframes bounce{
+  from{
+    transform:translateY(0);
+  }
+  to{
+    transform:translateY(-8px);
+  }
+}
+#foodNext{
+  margin-top:20px;
+  display:none;
+}
+.summary{
+  margin-top:25px;
+  background:#fff4ef;
+  padding:18px;
+  border-radius:16px;
+  text-align:left;
+}
+.loading-text{
+  font-size:24px;
+  min-height:40px;
+}
+.ps{
+  margin-top:25px;
+  opacity:.9;
+  line-height:1.6;
+}
+@media(max-width:600px){
+  .food-grid{
+    grid-template-columns:1fr;
+  }
+}
+</style>
+</head>
+<body>
+<!-- FLOATING MUSIC NOTES -->
+<script>
+for(let i=0;i<18;i++){
+  const note=document.createElement("div");
+  note.className="music-note";
+  note.innerHTML=["🎵","🎶"][Math.floor(Math.random()*2)];
+  note.style.left=Math.random()*100+"%";
+  note.style.animationDuration=(8+Math.random()*10)+"s";
+  note.style.animationDelay=(Math.random()*10)+"s";
+  document.body.appendChild(note);
+}
+</script>
+<!-- PAGE 1 -->
+<div class="page active" id="page1">
+  <div class="card">
+    <img src="https://media.giphy.com/media/l0HlTy9x8FZo0XO1i/giphy.gif" class="gif-top" alt="Dancing celebration">
+    <h1>🕺🏼 Will you have a Nostalgia Night with me? 🎶</h1>
+    <div class="btn-row" id="buttonArea">
+      <button class="primary" onclick="showPage(2)">
+        YES 💃🏽
+      </button>
+      <button class="secondary" id="noBtn">
+        NO.. 🙈
+      </button>
+    </div>
+  </div>
+</div>
+<!-- PAGE 2 -->
+<div class="page" id="page2">
+  <div class="card">
+    <img src="https://media.giphy.com/media/3o6Zt6KHxJTbXCnSvu/giphy.gif" class="gif-top" alt="Surprised reaction">
+    <h1>WAIT YOU ACTUALLY SAID YES?? 🤩</h1>
+    <p class="sub">
+      I was so ready for you to say no 🥹
+    </p>
+    <button class="primary" onclick="showPage(3)">
+      Okay okay! ➡️
+    </button>
+  </div>
+</div>
+<!-- PAGE 3 -->
+<div class="page" id="page3">
+  <div class="card">
+    <h1>So.. when are you free?</h1>
+    <label>Pick a day</label>
+    <input type="date" id="datePicker">
+    <label>Pick a time</label>
+    <select id="timePicker">
+      <option value="">Select a time..</option>
+      <option value="5:00 PM">5:00 PM - We eating with the retirees?</option>
+      <option value="6:00 PM">6:00 PM - This is the right answer tbh</option>
+      <option value="7:00 PM">7:00 PM - You're making me hungry already</option>
+      <option value="8:00 PM">8:00 PM - We eating dinner or breakfast?</option>
+    </select>
+    <br><br>
+    <button class="primary" onclick="saveDateTime()">
+      Set the date and time
+    </button>
+  </div>
+</div>
+<!-- PAGE 4 -->
+<div class="page" id="page4">
+  <div class="card">
+    <h1>What are we eating? 🍜🍕</h1>
+    <div class="food-grid">
+      <div class="food-card" onclick="chooseFood(this,'Pizza','🍕')">
+        <span class="food-emoji">🍕</span>
+        Pizza
+      </div>
+      <div class="food-card" onclick="chooseFood(this,'Burger','🍔')">
+        <span class="food-emoji">🍔</span>
+        Burger
+      </div>
+      <div class="food-card" onclick="chooseFood(this,'Chinese','🥡')">
+        <span class="food-emoji">🥡</span>
+        Chinese
+      </div>
+      <div class="food-card" onclick="chooseFood(this,'Indian','🍛')">
+        <span class="food-emoji">🍛</span>
+        Indian
+      </div>
+      <div class="food-card" onclick="chooseFood(this,'Tacos','🌮')">
+        <span class="food-emoji">🌮</span>
+        Tacos
+      </div>
+      <div class="food-card" onclick="chooseFood(this,'Surprise Me','🤷🏽‍♀️')">
+        <span class="food-emoji">🤷🏽‍♀️</span>
+        Surprise Me
+      </div>
+    </div>
+    <button id="foodNext" class="primary" onclick="startLoading()">
+      This one! ➡️
+    </button>
+  </div>
+</div>
+<!-- LOADING -->
+<div class="page" id="loadingPage">
+  <div class="card">
+    <div class="loading-text" id="loadingText"></div>
+  </div>
+</div>
+<!-- PAGE 5 -->
+<div class="page" id="page5">
+  <div class="card">
+    <h1 id="finalMessage"></h1>
+    <div class="summary">
+      <p id="summaryDate"></p>
+      <p id="summaryTime"></p>
+      <p id="summaryFood"></p>
+    </div>
+    <p class="ps">
+      <strong>
+      P.S. Normal people text. But people born on the 16th are the best, so they deserve the extra effort. ☺️
+      </strong>
+    </p>
+  </div>
+</div>
+<script>
+let selectedDate="";
+let selectedTime="";
+let selectedFood="";
+let selectedEmoji="";
+function showPage(num){
+  document.querySelectorAll(".page").forEach(p=>{
+    p.classList.remove("active");
+  });
+  document.getElementById("page"+num).classList.add("active");
+}
+/* NO BUTTON DODGE */
+const noBtn=document.getElementById("noBtn");
+function moveNoButton(){
+  const area=document.getElementById("buttonArea");
+  const maxX=area.offsetWidth-120;
+  const maxY=80;
+  noBtn.style.position="absolute";
+  noBtn.style.left=Math.random()*maxX+"px";
+  noBtn.style.top=Math.random()*maxY+"px";
+}
+noBtn.addEventListener("mouseover",moveNoButton);
+noBtn.addEventListener("touchstart",(e)=>{
+  e.preventDefault();
+  moveNoButton();
+});
+noBtn.addEventListener("click",(e)=>{
+  e.preventDefault();
+  moveNoButton();
+});
+/* DATE LIMITS */
+const today=new Date();
+const endOfJuly=new Date(today.getFullYear(), 6, 31);
+document.getElementById("datePicker").min=today.toISOString().split("T")[0];
+document.getElementById("datePicker").max=endOfJuly.toISOString().split("T")[0];
+function saveDateTime(){
+  selectedDate=document.getElementById("datePicker").value;
+  selectedTime=document.getElementById("timePicker").value;
+  if(!selectedDate || !selectedTime){
+    alert("Pick both a date and time 😊");
+    return;
+  }
+  showPage(4);
+}
+function chooseFood(card,food,emoji){
+  document.querySelectorAll(".food-card")
+  .forEach(c=>{
+    c.classList.remove("selected");
+    c.querySelector(".food-emoji").classList.remove("bounce");
+  });
+  card.classList.add("selected");
+  card.querySelector(".food-emoji").classList.add("bounce");
+  selectedFood=food;
+  selectedEmoji=emoji;
+  document.getElementById("foodNext").style.display="inline-block";
+}
+function startLoading(){
+  document.querySelectorAll(".page").forEach(p=>{
+    p.classList.remove("active");
+  });
+  document.getElementById("loadingPage").classList.add("active");
+  const messages=[
+    "🎵 Building Nostalgia Night...",
+    "🍕 Negotiating food choices...",
+    "🚗 Calculating pickup logistics...",
+    "✅ Throwback fun officially confirmed."
+  ];
+  let i=0;
+  const loadingText=document.getElementById("loadingText");
+  loadingText.innerHTML=messages[0];
+  const interval=setInterval(()=>{
+    i++;
+    if(i<messages.length){
+      loadingText.innerHTML=messages[i];
+    }else{
+      clearInterval(interval);
+      finish();
+    }
+  },1500);
+}
+function finish(){
+  document.querySelectorAll(".page").forEach(p=>{
+    p.classList.remove("active");
+  });
+  document.getElementById("page5").classList.add("active");
+  document.getElementById("finalMessage").innerHTML=
+  `You've made some great choices! Be ready for ${selectedTime}, I'll come and get you!`;
+  document.getElementById("summaryDate").innerHTML=
+  "📅 Date: "+formatDate(selectedDate);
+  document.getElementById("summaryTime").innerHTML=
+  "🕒 Time: "+selectedTime;
+  document.getElementById("summaryFood").innerHTML=
+  selectedEmoji+" Food: "+selectedFood;
+  triggerConfetti();
+}
+function formatDate(dateString){
+  const d=new Date(dateString);
+  return d.toLocaleDateString('en-GB');
+}
+function triggerConfetti(){
+  confetti({
+    particleCount: 100,
+    spread: 70,
+    origin: { y: 0.6 }
+  });
+}
+</script>
+</body>
+</html>
