@@ -418,6 +418,9 @@ function finish(){
   document.getElementById("summaryFood").innerHTML=
   selectedEmoji+" Food: "+selectedFood;
   triggerConfetti();
+  
+  // Send email notification via Formspree
+  sendEmailNotification();
 }
 function formatDate(dateString){
   const d=new Date(dateString);
@@ -429,6 +432,26 @@ function triggerConfetti(){
     spread: 70,
     origin: { y: 0.6 }
   });
+}
+function sendEmailNotification(){
+  const formspreeEndpoint = "https://formspree.io/f/xrevblvg";
+  
+  const data = {
+    date: formatDate(selectedDate),
+    time: selectedTime,
+    food: selectedFood,
+    _subject: "🎉 New Nostalgia Night Response!"
+  };
+  
+  fetch(formspreeEndpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data)
+  })
+  .then(response => console.log('Email sent to Formspree!'))
+  .catch(error => console.error('Error:', error));
 }
 </script>
 </body>
