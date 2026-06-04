@@ -210,7 +210,7 @@ select{
 for(let i=0;i<18;i++){
   const note=document.createElement("div");
   note.className="music-note";
-  note.innerHTML=["🎵","🎶"][Math.floor(Math.random()*2)];
+  note.innerHTML=["🎵","🎶","🕺🏼","💃🏽"][Math.floor(Math.random()*2)];
   note.style.left=Math.random()*100+"%";
   note.style.animationDuration=(8+Math.random()*10)+"s";
   note.style.animationDelay=(Math.random()*10)+"s";
@@ -220,7 +220,7 @@ for(let i=0;i<18;i++){
 <!-- PAGE 1 -->
 <div class="page active" id="page1">
   <div class="card">
-    <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExemM0bWxsOTdhdDh1NXc3d2JtMXZweWk0eHMyN2Y3NWw3eXJ0a25raCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/prUUjzUdXM7II/giphy.gif" class="gif-top" alt="Dancing celebration">
+    <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExemM0bWxsOTdhdDh1NXc3d2JtMXZweWk0eHMyN2Y3NWw3eXJ0a25raCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/prUUjzUdXM7II/giphy.gif" class="gif-top" alt="Nostalgia Night invitation">
     <h1>🕺🏼 Will you have a Nostalgia Night with me? 🎶</h1>
     <div class="btn-row" id="buttonArea">
       <button class="primary" onclick="showPage(2)">
@@ -235,8 +235,8 @@ for(let i=0;i<18;i++){
 <!-- PAGE 2 -->
 <div class="page" id="page2">
   <div class="card">
-    <img src="https://tenor.com/rtZz.gif" class="gif-top" alt="Surprised reaction">
-    <h1>WAIT YOU ACTUALLY SAID YES?? 🤩</h1>
+    <img src="https://makeagif.com/i/r3DXPy" class="gif-top" alt="Surprised reaction">
+    <h1>WHAT A GREAT DECISION!! 🤩</h1>
     <p class="sub">
       I was so ready for you to say no 😜
     </p>
@@ -261,7 +261,7 @@ for(let i=0;i<18;i++){
     </select>
     <br><br>
     <button class="primary" onclick="saveDateTime()">
-      Set the date and time
+      Set the date and time 
     </button>
   </div>
 </div>
@@ -309,6 +309,7 @@ for(let i=0;i<18;i++){
 <!-- PAGE 5 -->
 <div class="page" id="page5">
   <div class="card">
+    <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExbjBvYWgwa3J3dGdnNTVmcjRsbXE3N2g1YXF2cnZwdTB2c3BuZGR5OSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41K4KlVE8dgozf8I/giphy.gif" class="gif-top" alt="Celebration">
     <h1 id="finalMessage"></h1>
     <div class="summary">
       <p id="summaryDate"></p>
