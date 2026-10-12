@@ -6,6 +6,11 @@
 <title>Nostalgia Night 🎶</title>
 <!-- CANVAS CONFETTI LIBRARY -->
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.0/dist/confetti.browser.min.js"></script>
+
+<!-- flatpickr (calendar with disabled dates) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
 <style>
 :root{
   --bg:#fff8ef;
@@ -217,6 +222,7 @@ for(let i=0;i<18;i++){
   document.body.appendChild(note);
 }
 </script>
+
 <!-- PAGE 1 -->
 <div class="page active" id="page1">
   <div class="card">
@@ -232,6 +238,7 @@ for(let i=0;i<18;i++){
     </div>
   </div>
 </div>
+
 <!-- PAGE 2 -->
 <div class="page" id="page2">
   <div class="card">
@@ -245,13 +252,15 @@ for(let i=0;i<18;i++){
     </button>
   </div>
 </div>
+
 <!-- PAGE 3 -->
 <div class="page" id="page3">
   <div class="card">
     <div style="font-size: 48px; margin-bottom: 20px; animation: bounce 0.6s infinite alternate;">🗓️⏰</div>
     <h1>So.. when are you free?</h1>
     <label>Pick a day 📆</label>
-    <input type="date" id="datePicker">
+    <!-- flatpickr works best with a text input -->
+    <input type="text" id="datePicker" placeholder="Select a date">
     <label>Pick a time ⏰</label>
     <select id="timePicker">
       <option value="">Select a time..</option>
@@ -266,6 +275,7 @@ for(let i=0;i<18;i++){
     </button>
   </div>
 </div>
+
 <!-- PAGE 4 -->
 <div class="page" id="page4">
   <div class="card">
@@ -301,12 +311,14 @@ for(let i=0;i<18;i++){
     </button>
   </div>
 </div>
+
 <!-- LOADING -->
 <div class="page" id="loadingPage">
   <div class="card">
     <div class="loading-text" id="loadingText"></div>
   </div>
 </div>
+
 <!-- PAGE 5 -->
 <div class="page" id="page5">
   <div class="card">
@@ -324,17 +336,49 @@ for(let i=0;i<18;i++){
     </p>
   </div>
 </div>
+
 <script>
-let selectedDate="";
-let selectedTime="";
-let selectedFood="";
-let selectedEmoji="";
+let selectedDate = "";
+let selectedTime = "";
+let selectedFood = "";
+let selectedEmoji = "";
+
+// Disabled date list (YYYY-MM-DD)
+const disabledDates = [
+  "2026-10-16",
+  "2026-10-17",
+  "2026-12-12"
+];
+
+// flatpickr initialization
+const today = new Date();
+const minDateStr = today.toISOString().split("T")[0];
+// Set a max date that includes your disabled dates - adjust if needed
+const maxDateStr = "2026-12-31";
+
+flatpickr("#datePicker", {
+  dateFormat: "Y-m-d",
+  minDate: minDateStr,
+  maxDate: maxDateStr,
+  disable: disabledDates,
+  allowInput: false,
+  // optional styling hook when a date is selected
+  onChange: function(selectedDates, dateStr) {
+    // dateStr will never be one of the disabledDates because flatpickr prevents selection,
+    // but we keep a fallback check in saveDateTime as well.
+  }
+});
+
+// Make the input read-only so users use the calendar widget
+document.getElementById("datePicker").readOnly = true;
+
 function showPage(num){
   document.querySelectorAll(".page").forEach(p=>{
     p.classList.remove("active");
   });
   document.getElementById("page"+num).classList.add("active");
 }
+
 /* NO BUTTON DODGE */
 const noBtn=document.getElementById("noBtn");
 function moveNoButton(){
@@ -354,20 +398,27 @@ noBtn.addEventListener("click",(e)=>{
   e.preventDefault();
   moveNoButton();
 });
-/* DATE LIMITS */
-const today=new Date();
-const endOfJuly=new Date(today.getFullYear(), 6, 31);
-document.getElementById("datePicker").min=today.toISOString().split("T")[0];
-document.getElementById("datePicker").max=endOfJuly.toISOString().split("T")[0];
+
 function saveDateTime(){
-  selectedDate=document.getElementById("datePicker").value;
-  selectedTime=document.getElementById("timePicker").value;
+  selectedDate = document.getElementById("datePicker").value;
+  selectedTime = document.getElementById("timePicker").value;
+
   if(!selectedDate || !selectedTime){
     alert("Pick both a date and time 😊");
     return;
   }
+
+  // Fallback validation in case someone tampers with the input value
+  if(disabledDates.includes(selectedDate)){
+    alert("Sorry, that date is unavailable. Please pick another day.");
+    document.getElementById("datePicker").value = "";
+    document.getElementById("datePicker").focus();
+    return;
+  }
+
   showPage(4);
 }
+
 function chooseFood(card,food,emoji){
   document.querySelectorAll(".food-card")
   .forEach(c=>{
@@ -380,6 +431,7 @@ function chooseFood(card,food,emoji){
   selectedEmoji=emoji;
   document.getElementById("foodNext").style.display="inline-block";
 }
+
 function startLoading(){
   document.querySelectorAll(".page").forEach(p=>{
     p.classList.remove("active");
@@ -404,6 +456,7 @@ function startLoading(){
     }
   },1500);
 }
+
 function finish(){
   document.querySelectorAll(".page").forEach(p=>{
     p.classList.remove("active");
@@ -422,10 +475,13 @@ function finish(){
   // Send email notification via Formspree
   sendEmailNotification();
 }
+
 function formatDate(dateString){
+  // dateString is in YYYY-MM-DD
   const d=new Date(dateString);
   return d.toLocaleDateString('en-GB');
 }
+
 function triggerConfetti(){
   confetti({
     particleCount: 100,
@@ -433,6 +489,7 @@ function triggerConfetti(){
     origin: { y: 0.6 }
   });
 }
+
 function sendEmailNotification(){
   const formspreeEndpoint = "https://formspree.io/f/xrevblvg";
   
