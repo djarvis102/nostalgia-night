@@ -353,7 +353,7 @@ const disabledDates = [
 // flatpickr initialization
 const today = new Date();
 const minDateStr = today.toISOString().split("T")[0];
-// Set a max date that includes your disabled dates - adjust if needed
+// keep a max date covering the disabled dates
 const maxDateStr = "2026-12-31";
 
 flatpickr("#datePicker", {
@@ -361,12 +361,7 @@ flatpickr("#datePicker", {
   minDate: minDateStr,
   maxDate: maxDateStr,
   disable: disabledDates,
-  allowInput: false,
-  // optional styling hook when a date is selected
-  onChange: function(selectedDates, dateStr) {
-    // dateStr will never be one of the disabledDates because flatpickr prevents selection,
-    // but we keep a fallback check in saveDateTime as well.
-  }
+  allowInput: false
 });
 
 // Make the input read-only so users use the calendar widget
@@ -408,7 +403,7 @@ function saveDateTime(){
     return;
   }
 
-  // Fallback validation in case someone tampers with the input value
+  // Fallback validation (in case input was tampered)
   if(disabledDates.includes(selectedDate)){
     alert("Sorry, that date is unavailable. Please pick another day.");
     document.getElementById("datePicker").value = "";
@@ -457,29 +452,74 @@ function startLoading(){
   },1500);
 }
 
+// Helper: ordinal suffix for a day (1st, 2nd, 3rd, 4th...)
+function ordinalSuffix(day) {
+  if (day % 100 >= 11 && day % 100 <= 13) {
+    return day + 'th';
+  }
+  switch (day % 10) {
+    case 1: return day + 'st';
+    case 2: return day + 'nd';
+    case 3: return day + 'rd';
+    default: return day + 'th';
+  }
+}
+
+// Format date to "30th November"
+function formatDateHuman(dateString){
+  if(!dateString) return '';
+  const d = new Date(dateString + 'T00:00:00'); // ensure no timezone shift
+  const day = d.getDate();
+  const month = d.toLocaleString('en-GB', { month: 'long' });
+  return `${ordinalSuffix(day)} ${month}`;
+}
+
+// Keep the old summary date format (en-GB)
+function formatDate(dateString){
+  if(!dateString) return '';
+  const d=new Date(dateString + 'T00:00:00');
+  return d.toLocaleDateString('en-GB');
+}
+
+// Format time like "6:00 PM" => "6pm" or "6:30 PM" => "6:30pm"
+function formatTimeCompact(timeStr){
+  if(!timeStr) return '';
+  const m = timeStr.match(/^(\d{1,2})(?::(\d{2}))?\s*([AP]M)$/i);
+  if(!m) return timeStr;
+  const hour = parseInt(m[1], 10);
+  const mins = m[2] || '';
+  const ampm = m[3].toLowerCase();
+  return mins ? `${hour}:${mins}${ampm}` : `${hour}${ampm}`;
+}
+
 function finish(){
   document.querySelectorAll(".page").forEach(p=>{
     p.classList.remove("active");
   });
   document.getElementById("page5").classList.add("active");
-  document.getElementById("finalMessage").innerHTML=
-  `You've made some great choices! Be ready for ${selectedTime}, I'll come and get you!`;
-  document.getElementById("summaryDate").innerHTML=
-  "📅 Date: "+formatDate(selectedDate);
-  document.getElementById("summaryTime").innerHTML=
-  "🕒 Time: "+selectedTime;
-  document.getElementById("summaryFood").innerHTML=
-  selectedEmoji+" Food: "+selectedFood;
+
+  // Build friendly date/time parts
+  const humanDate = selectedDate ? formatDateHuman(selectedDate) : '';
+  const compactTime = selectedTime ? formatTimeCompact(selectedTime) : '';
+
+  // Example: "You've made some great choices! Be ready for 6pm on 30th November, I'll come and get you! ☺️"
+  const datePart = humanDate ? ` on ${humanDate}` : '';
+  const timePart = compactTime ? `${compactTime}` : '';
+  const preposition = timePart ? `${timePart}${datePart}` : humanDate ? `${humanDate}` : '';
+
+  document.getElementById("finalMessage").textContent =
+    `You've made some great choices! Be ready at ${preposition}, I'll come and get you! ☺️`;
+
+  document.getElementById("summaryDate").innerHTML =
+    "📅 Date: " + formatDate(selectedDate);
+  document.getElementById("summaryTime").innerHTML =
+    "🕒 Time: " + selectedTime;
+  document.getElementById("summaryFood").innerHTML =
+    selectedEmoji + " Food: " + selectedFood;
   triggerConfetti();
-  
+
   // Send email notification via Formspree
   sendEmailNotification();
-}
-
-function formatDate(dateString){
-  // dateString is in YYYY-MM-DD
-  const d=new Date(dateString);
-  return d.toLocaleDateString('en-GB');
 }
 
 function triggerConfetti(){
